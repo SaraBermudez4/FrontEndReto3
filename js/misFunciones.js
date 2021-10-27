@@ -23,6 +23,7 @@ function pintarRespuestaAuditorio(items) {
                             <th>Capacidad</th>
                             <th>Nombre</th>
                             <th>Descripción</th>
+                            <th>Categoria</th>
                             <th>Eliminar</th>
                             <th>Actualizar</th>
                         </tr>`;
@@ -33,6 +34,11 @@ function pintarRespuestaAuditorio(items) {
         myTable += `<td>${items[i].capacity}</td>`;
         myTable += `<td>${items[i].name}</td>`;
         myTable += `<td>${items[i].description}</td>`;
+        if (items[i].category !== null) {
+            myTable += `<td>${items[i].category.name}</td>`;
+        } else {
+            myTable += `<td>Sin categoria</td>`;
+        }
         myTable += `<td> <button class="btn btn-outline-info" onclick='borrarElementoAuditorio(${items[i].id})'>Borrar</button> </td>`;
         myTable += `<td><button class="btn btn-outline-info"><a href="editarAuditorio.html#${items[i].id}">Editar</a></button></td>`;
         myTable += "</tr>";
@@ -47,6 +53,10 @@ function traerInformacionAuditorio() {
         datatype: "JSON",
         success: function (response) {
             pintarRespuestaAuditorio(response);
+            let $select = $("#selectAuditorio")
+            $.each(response, function (id, name) {
+                $select.html(`<option value=${name.id}>${name.name}</option>`)
+            })
         },
         error: function (jqXHR, textStatus, errorThrown) {
             alertaError("No se pueden ver los auditorios")
@@ -59,6 +69,7 @@ function guardarInformacionAuditorio() {
         description: $("#descriptionAuditorio").val(),
         capacity: $("#capacity").val(),
         name: $("#nameAuditorio").val(),
+        category: { id: Number($("#selectCatogria").val()) },
     };
     if (myData.owner !== "" && myData.description !== "" && myData.capacity !== "" && myData.name !== "") {
         $.ajax({
@@ -111,7 +122,6 @@ function pintarRespuestaCategoria(items) {
     for (let i = 0; i < items.length; i++) {
         myTable += "<tr>";
         myTable += `<td id="idTableCategoria">${items[i].id}</td>`;
-        myTable += `<td>${items[i].id}</td>`;
         myTable += `<td>${items[i].name}</td>`;
         myTable += `<td>${items[i].description}</td>`;
         myTable += `<td> <button class="btn btn-outline-info" onclick='borrarElementoCategoria(${items[i].id})'>Borrar</button> </td>`;
@@ -128,6 +138,10 @@ function traerInformacionCategoria() {
         datatype: "JSON",
         success: function (response) {
             pintarRespuestaCategoria(response);
+            let $select = $("#selectCatogria")
+            $.each(response, function (id, name) {
+                $select.html(`<option value=${name.id}>${name.name}</option>`)
+            })
         },
         error: function (jqXHR, textStatus, errorThrown) {
             alertaError("No se pueden ver las categorias")
@@ -210,6 +224,10 @@ function traerInformacionCliente() {
         datatype: "JSON",
         success: function (response) {
             pintarRespuestaCliente(response);
+            let $select = $("#selectCliente")
+            $.each(response, function (id, name) {
+                $select.html(`<option value=${name.id}>${name.name}</option>`)
+            })
         },
         error: function (jqXHR, textStatus, errorThrown) {
             alertaError("No se pueden ver los clientes")
@@ -266,6 +284,8 @@ function pintarRespuestaMensaje(items) {
                         <tr class="table-info">
                             <th>ID</th>
                             <th>Mensaje</th>
+                            <th>Cliente</th>
+                            <th>Auditorio</th>
                             <th>Eliminar</th>
                             <th>Actualizar</th>
                         </tr>`;
@@ -274,6 +294,16 @@ function pintarRespuestaMensaje(items) {
         myTable += "<tr>";
         myTable += `<td>${items[i].idMessage}</td>`;
         myTable += `<td>${items[i].messageText}</td>`;
+        if (items[i].client !== null) {
+            myTable += `<td>${items[i].client.name}</td>`;
+        } else {
+            myTable += `<td>Sin cliente</td>`;
+        }
+        if (items[i].audience !== null) {
+            myTable += `<td>${items[i].audience.name}</td>`;
+        } else {
+            myTable += `<td>Sin auditorio</td>`;
+        }
         myTable += `<td> <button class="btn btn-outline-info" onclick='borrarElementoMensaje(${items[i].idMessage})'>Borrar</button>`;
         myTable += `<td><button class="btn btn-outline-info"><a href="editarMensaje.html#${items[i].idMessage}">Editar</a></button></td>`;
         myTable += "</tr>";
@@ -297,6 +327,8 @@ function traerInformacionMensaje() {
 function guardarInformacionMensaje() {
     let myData = {
         messageText: $("#messagetext").val(),
+        client: { id: Number($("#selectCliente").val()) },
+        audience: { id: Number($("#selectAuditorio").val()) },
     };
     if (myData.messageText !== "") {
         $.ajax({
@@ -337,6 +369,8 @@ function pintarRespuestaReservacion(items) {
     let myTable = `<table class="table table-light">
                         <tr class="table-info">
                             <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Auditorio</th>
                             <th>Fecha de inicio</th>
                             <th>Fecha de devolución</th>
                             <th>Estado</th>
@@ -349,6 +383,16 @@ function pintarRespuestaReservacion(items) {
         myTable += `<td>${items[i].idReservation}</td>`;
         myTable += `<td>${items[i].startDate}</td>`;
         myTable += `<td>${items[i].devolutionDate}</td>`;
+        if (items[i].client !== null) {
+            myTable += `<td>${items[i].client.name}</td>`;
+        } else {
+            myTable += `<td>Sin cliente</td>`;
+        }
+        if (items[i].audience !== null) {
+            myTable += `<td>${items[i].audience.name}</td>`;
+        } else {
+            myTable += `<td>Sin auditorio</td>`;
+        }
         myTable += `<td>${items[i].status}</td>`;
         myTable += `<td> <button class="btn btn-outline-info" onclick='borrarElementoReservacion(${items[i].idReservation})'>Borrar</button>`;
         myTable += `<td><button class="btn btn-outline-info"><a href="editarReservacion.html#${items[i].idReservation}">Editar</a></button></td>`;
@@ -375,6 +419,8 @@ function guardarInformacionReservacion() {
         startDate: $("#startDate").val(),
         devolutionDate: $("#devolutionDate").val(),
         status: $("#status").val(),
+        client: { id: Number($("#selectCliente").val()) },
+        audience: { id: Number($("#selectAuditorio").val()) },
     };
     if (myData.startDate !== "" && myData.devolutionDate !== "" && myData.status !== "") {
         $.ajax({
